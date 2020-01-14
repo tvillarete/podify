@@ -6,6 +6,7 @@ export { default as ArtistsView } from "./ArtistsView";
 export { default as ArtistView } from "./ArtistView";
 export { default as AlbumsView } from "./AlbumsView";
 export { default as AlbumView } from "./AlbumView";
+export { default as AuthView } from "./AuthView";
 export { default as NowPlayingView } from "./NowPlayingView";
 export { default as GamesView } from "./GamesView";
 export { default as BrickGameView } from "./BrickGameView";
@@ -25,6 +26,7 @@ type ViewOption = {
 
 export const ViewOptions: Record<string, ViewOption> = {
   // Split Screen Views
+  auth: { id: "auth", title: "iPod.js", type: WINDOW_TYPE.SPLIT },
   home: { id: "home", title: "iPod.js", type: WINDOW_TYPE.SPLIT },
   music: { id: "music", title: "Music", type: WINDOW_TYPE.SPLIT },
   games: { id: "games", title: "Games", type: WINDOW_TYPE.SPLIT },
