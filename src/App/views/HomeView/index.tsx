@@ -13,31 +13,31 @@ import { useScrollHandler } from 'hooks';
 import { useAudioService } from 'services/audio';
 
 const strings = {
-  nowPlaying: "Now Playing"
+  nowPlaying: 'Now Playing'
 };
 
 const HomeView = () => {
   const initialOptions: SelectableListOption[] = [
     {
-      label: "Cover Flow",
+      label: 'Cover Flow',
       value: () => <CoverFlowView />,
       viewId: ViewOptions.coverFlow.id,
       preview: PREVIEW.MUSIC
     },
     {
-      label: "Music",
+      label: 'Music',
       value: () => <MusicView />,
       viewId: ViewOptions.music.id,
       preview: PREVIEW.MUSIC
     },
     {
-      label: "Games",
+      label: 'Games',
       value: () => <GamesView />,
       viewId: ViewOptions.games.id,
       preview: PREVIEW.GAMES
     },
     {
-      label: "Settings",
+      label: 'Settings',
       value: () => <SettingsView />,
       viewId: ViewOptions.settings.id,
       preview: PREVIEW.SETTINGS

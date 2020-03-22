@@ -5,6 +5,7 @@ import { SelectableList, SelectableListOption } from 'components';
 import { useScrollHandler } from 'hooks';
 import { useSpotifyService } from 'services/spotify';
 import { useWindowService } from 'services/window';
+import { isDev } from 'utils';
 
 const AuthView = () => {
   const { loggedIn } = useSpotifyService();
@@ -24,7 +25,7 @@ const AuthView = () => {
     {
       label: "Spotify Signin",
       value: "hi",
-      link: "localhost:8888/login"
+      link: `http://tannerv.ddns.net:3001/${isDev ? 'login_dev' : 'login'}`
     }
   ];
 

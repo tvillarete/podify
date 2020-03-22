@@ -2059,6 +2059,11 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
+"@types/spotify-api@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/spotify-api/-/spotify-api-0.0.2.tgz#83bccd04fbc00de01d515418d77d658f277ef6f5"
+  integrity sha512-6WlUsg2xaSyxHZShTy+KNe4Hm8foDtaEVLe6+ID5DGOoByhcSKioCV2kPN6E8swgf2IHn+1o9knlbryYmoL0fw==
+
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
