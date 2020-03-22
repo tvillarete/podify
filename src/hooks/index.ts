@@ -1,4 +1,5 @@
 export { default as useEventListener } from "./useEventListener";
+export { default as useFetch } from "./useFetch";
 export { default as useMenuHideWindow } from "./useMenuHideWindow";
 export { default as useScrollHandler } from "./useScrollHandler";
 export { default as useInterval } from "./useInterval";

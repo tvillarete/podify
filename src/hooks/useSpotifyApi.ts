@@ -1,35 +1,37 @@
-import { useState, useCallback } from "react";
-import { useSpotifyService } from "services/spotify";
+import { useFetch } from 'hooks';
+import { ApiCache, useSpotifyService } from 'services/spotify';
 
-export interface SpotifyApiHook {
-  getUser: () => Promise<SpotifyApi.CurrentUsersProfileResponse>;
+export interface SpotifyApiHook<TType> {
+  loading: boolean;
+  data?: TType;
+  error?: Error;
 }
 
-const useSpotifyApi = (): SpotifyApiHook => {
-  const { spotifyState, updateApiCache } = useSpotifyService();
-  const { accessToken, apiCache } = spotifyState;
+const useSpotifyApi = <TType>(
+  endpoint: string,
+  cacheKey?: keyof ApiCache,
+  optionsOverride?: RequestInit
+): SpotifyApiHook<TType> => {
+  const { spotifyState } = useSpotifyService();
+  const { accessToken } = spotifyState;
 
-  const getUser = useCallback(async () => {
-    if (apiCache.user) {
-      return apiCache.user;
+  const fetchOptions = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    json: true
+  };
+
+  const { loading, data, error } = useFetch<TType>(
+    `https://api.spotify.com/v1/${endpoint}`,
+    {
+      ...fetchOptions,
+      ...optionsOverride
     }
-
-    const options = {
-      headers: { Authorization: `Bearer ${accessToken}` },
-      json: true
-    };
-
-    const user: SpotifyApi.CurrentUsersProfileResponse = await (
-      await fetch("https://api.spotify.com/v1/me", options)
-    ).json();
-
-    updateApiCache({ user });
-
-    return user;
-  }, []);
+  );
 
   return {
-    getUser
+    loading,
+    data,
+    error
   };
 };
 

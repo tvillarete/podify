@@ -8,6 +8,7 @@ import { ALBUM, AlbumQuery } from 'queries';
 
 interface Props {
   name: string;
+  id?: string;
 }
 
 const AlbumView = ({ name }: Props) => {

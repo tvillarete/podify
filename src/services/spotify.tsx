@@ -8,6 +8,7 @@ import React, {
 
 export type ApiCache = {
   user?: SpotifyApi.CurrentUsersProfileResponse;
+  userAlbums?: SpotifyApi.UsersSavedAlbumsResponse;
 };
 
 export interface SpotifyState {
