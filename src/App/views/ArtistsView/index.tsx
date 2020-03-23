@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { SelectableList, SelectableListOption } from 'components';
 import { useMenuHideWindow, useScrollHandler } from 'hooks';
@@ -13,17 +13,21 @@ const ArtistsView = () => {
     SpotifyApi.UsersFollowedArtistsResponse
   >("me/following?type=artist&limit=50");
 
+  const handleData = useCallback(() => {
+    setOptions(
+      data!.artists.items.map(artist => ({
+        label: artist.name,
+        viewId: ViewOptions.artist.id,
+        value: () => <ArtistView name={artist.name} id={artist.id} />
+      }))
+    );
+  }, [data]);
+
   useEffect(() => {
-    if (data?.artists.items && !error) {
-      setOptions(
-        data.artists.items.map(artist => ({
-          label: artist.name,
-          viewId: ViewOptions.artist.id,
-          value: () => <ArtistView name={artist.name} id={artist.id} />
-        }))
-      );
+    if (data?.artists.items && !options.length && !error) {
+      handleData();
     }
-  }, [data, error]);
+  }, [data, error, handleData, options.length]);
 
   const [index] = useScrollHandler(ViewOptions.artists.id, options);
 
