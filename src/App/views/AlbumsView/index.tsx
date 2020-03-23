@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { SelectableList, SelectableListOption } from 'components';
 import { useMenuHideWindow, useScrollHandler } from 'hooks';
@@ -14,22 +14,18 @@ const AlbumsView = () => {
     "me/albums?limit=50"
   );
 
-  const handleData = useCallback(() => {
-    const newOptions = data!.items.map(item => ({
-      label: item.album.name,
-      value: () => <AlbumView name="Unused prop" id={item.album.id} />,
-      image: item.album.images[0].url,
-      viewId: ViewOptions.album.id
-    }));
-
-    setOptions(newOptions);
-  }, [data]);
-
   useEffect(() => {
     if (data && !options.length) {
-      handleData();
+      setOptions(
+        data!.items.map(item => ({
+          label: item.album.name,
+          value: () => <AlbumView name="Unused prop" id={item.album.id} />,
+          image: item.album.images[0].url,
+          viewId: ViewOptions.album.id
+        }))
+      );
     }
-  }, [data, handleData, options]);
+  }, [data, options]);
 
   return (
     <SelectableList loading={loading} options={options} activeIndex={index} />

@@ -15,6 +15,8 @@ const useSpotifyApi = <TType>(
   const { spotifyState } = useSpotifyService();
   const { accessToken } = spotifyState;
 
+  const shouldFetch = !!accessToken;
+
   const fetchOptions = {
     headers: { Authorization: `Bearer ${accessToken}` },
     json: true
@@ -25,7 +27,8 @@ const useSpotifyApi = <TType>(
     {
       ...fetchOptions,
       ...optionsOverride
-    }
+    },
+    shouldFetch
   );
 
   return {

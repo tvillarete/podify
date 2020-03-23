@@ -1,40 +1,25 @@
 import React, { useEffect, useState } from 'react';
 
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
 import { SelectableList, SelectableListOption } from 'components';
 import { useMenuHideWindow, useScrollHandler } from 'hooks';
+import useSpotifyApi from 'hooks/useSpotifyApi';
 
 import ViewOptions, { ArtistView } from '../';
 
-type ArtistsQuery = {
-  artists: [
-    {
-      artist: string;
-    }
-  ];
-};
-
-const ARTISTS = gql`
-  {
-    artists {
-      artist
-    }
-  }
-`;
-
 const ArtistsView = () => {
   useMenuHideWindow(ViewOptions.artists.id);
-  const { loading, error, data } = useQuery<ArtistsQuery>(ARTISTS);
   const [options, setOptions] = useState<SelectableListOption[]>([]);
+  const { loading, data, error } = useSpotifyApi<
+    SpotifyApi.UsersFollowedArtistsResponse
+  >("me/following?type=artist&limit=50");
 
   useEffect(() => {
-    if (data && data.artists && !error) {
+    if (data?.artists.items && !error) {
       setOptions(
-        data.artists.map(result => ({
-          label: result.artist,
+        data.artists.items.map(artist => ({
+          label: artist.name,
           viewId: ViewOptions.artist.id,
-          value: () => <ArtistView name={result.artist} />
+          value: () => <ArtistView name={artist.name} id={artist.id} />
         }))
       );
     }

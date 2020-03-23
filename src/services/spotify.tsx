@@ -27,6 +27,7 @@ type SpotifyContextType = [
 const SpotifyContext = createContext<SpotifyContextType>([
   {
     loggedIn: false,
+    accessToken: localStorage.getItem("spotify_access_token") ?? undefined,
     apiCache: {}
   },
   () => {}
@@ -50,20 +51,20 @@ export const useSpotifyService = (): SpotifyServiceHook => {
         const response = await fetch(
           `http://tannerv.ddns.net:3001/callback?state=${state}&code=${code}`,
           {
-            credentials: 'same-origin',
-            mode: 'cors'
+            credentials: "same-origin",
+            mode: "cors"
           }
         );
 
         const { accessToken, refreshToken } = await response.json();
 
-        localStorage.setItem('spotify_access_token', accessToken);
-        localStorage.setItem('spotify_refresh_token', refreshToken);
+        localStorage.setItem("spotify_access_token", accessToken);
+        localStorage.setItem("spotify_refresh_token", refreshToken);
 
         const today = new Date();
 
         localStorage.setItem(
-          'spotify_expires_in',
+          "spotify_expires_in",
           `${today.setHours(today.getHours() + 1)}`
         );
 
@@ -74,7 +75,7 @@ export const useSpotifyService = (): SpotifyServiceHook => {
           refreshToken
         }));
       } catch (error) {
-        console.error('error fetching token:', { error });
+        console.error("error fetching token:", { error });
       }
     },
     [setSpotifyState]
@@ -94,9 +95,9 @@ export const useSpotifyService = (): SpotifyServiceHook => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code') ?? '';
-    const state = urlParams.get('state') ?? '';
-    const storedToken = localStorage.getItem('spotify_access_token');
+    const code = urlParams.get("code") ?? "";
+    const state = urlParams.get("state") ?? "";
+    const storedToken = localStorage.getItem("spotify_access_token");
 
     if (storedToken) {
       setSpotifyState(prevState => ({

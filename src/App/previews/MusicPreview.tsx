@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { useQuery } from '@apollo/react-hooks';
 import { previewSlideRight } from 'animation';
 import { KenBurns, LoadingIndicator } from 'components';
 import { motion } from 'framer-motion';
-import { ALBUMS, AlbumsQuery } from 'queries';
+import useSpotifyApi from 'hooks/useSpotifyApi';
 import styled from 'styled-components';
 
 const Container = styled(motion.div)`
@@ -18,11 +17,13 @@ const Container = styled(motion.div)`
 
 const MusicPreview = () => {
   const [artworkUrls, setArtworkUrls] = useState<string[]>([]);
-  const { loading, error, data } = useQuery<AlbumsQuery>(ALBUMS);
+  const { loading, data, error } = useSpotifyApi<
+    SpotifyApi.UsersSavedAlbumsResponse
+  >("me/albums?limit=50");
 
   useEffect(() => {
-    if (data && data.albums && !error) {
-      setArtworkUrls(data.albums.map(result => result.artwork));
+    if (data?.items && !error) {
+      setArtworkUrls(data.items.map(({ album }) => album.images[0].url));
     }
   }, [data, error]);
 

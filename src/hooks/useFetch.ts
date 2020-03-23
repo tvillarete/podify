@@ -9,9 +9,9 @@ export interface FetchHook<TType> {
 const useFetch = <TType>(
   url: string,
   options?: RequestInit,
-  cachedVal?: any
+  shouldFetch?: boolean
 ) => {
-  const [data, setData] = useState<TType>(cachedVal);
+  const [data, setData] = useState<TType>();
   const [error, setError] = useState<Error>();
   const [loading, setLoading] = useState(false);
 
@@ -30,10 +30,10 @@ const useFetch = <TType>(
   }, [options, url]);
 
   useEffect(() => {
-    if (!loading && !data && !error) {
+    if (!loading && !data && !error && shouldFetch) {
       handleFetch();
     }
-  }, [data, error, handleFetch, loading]);
+  }, [data, error, handleFetch, loading, shouldFetch]);
   return { data, error, loading };
 };
 
