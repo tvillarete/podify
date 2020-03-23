@@ -2,9 +2,7 @@ import React from 'react';
 
 import { fadeScale } from 'animation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Album } from 'queries';
 import styled, { css } from 'styled-components';
-import { getUrlFromPath } from 'utils';
 
 import BacksideContent from './BacksideContent';
 import { Point } from './CoverFlow';
@@ -96,7 +94,7 @@ interface Props {
   index: number;
   activeIndex: number;
   midpoint: Point;
-  album: Album;
+  album: SpotifyApi.AlbumObjectFull;
   isSelected: boolean;
   playingAlbum: boolean;
   setPlayingAlbum: (val: boolean) => void;
@@ -127,7 +125,7 @@ const AlbumCover = ({
       activeIndex={activeIndex}
       isPlaying={isSelected && playingAlbum}
     >
-      <Artwork src={getUrlFromPath(album.artwork)} />
+      <Artwork src={album.images[0].url} />
       <AnimatePresence>
         {isSelected && !playingAlbum && (
           <Backside {...fadeScale}>

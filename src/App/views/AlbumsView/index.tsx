@@ -15,7 +15,7 @@ const AlbumsView = () => {
   );
 
   useEffect(() => {
-    if (data && !options.length) {
+    if (data?.items) {
       setOptions(
         data!.items.map(item => ({
           label: item.album.name,

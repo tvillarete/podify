@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
-import { useQuery } from '@apollo/react-hooks';
-import {
-  LoadingIndicator,
-  SelectableList,
-  SelectableListOption,
-} from 'components';
+import { SelectableList, SelectableListOption } from 'components';
 import { useEventListener, useScrollHandler } from 'hooks';
-import { Album, ALBUM, AlbumQuery } from 'queries';
 import styled from 'styled-components';
 
 import ViewOptions from '../';
@@ -48,47 +42,41 @@ const ListContainer = styled.div`
 `;
 
 interface Props {
-  album: Album;
+  album: SpotifyApi.AlbumObjectFull;
   setPlayingAlbum: (val: boolean) => void;
 }
 
 const BacksideContent = ({ album, setPlayingAlbum }: Props) => {
-  const { loading, error, data } = useQuery<AlbumQuery>(ALBUM, {
-    variables: { name: album.album }
-  });
   const [options, setOptions] = useState<SelectableListOption[]>([]);
   const [index] = useScrollHandler(ViewOptions.coverFlow.id, options);
 
   useEventListener("centerclick", () => setPlayingAlbum(true));
 
   useEffect(() => {
-    if (data && data.album && !error) {
-      setOptions(
-        data.album.map((song, index) => ({
-          label: song.name,
-          value: song,
-          songIndex: index,
-          playlist: data.album
-        }))
-      );
-    }
-  }, [data, error]);
+    setOptions(
+      album.tracks.items.map((track, index) => ({
+        label: track.name,
+        value: track,
+        songIndex: index
+        // playlist: data.album
+      }))
+    );
+  }, [album.tracks.items]);
+
+  const artistNames = useMemo(
+    () => album.artists.map(artist => artist.name).join(", "),
+    [album.artists]
+  );
 
   return (
     <Container>
-      {loading ? (
-        <LoadingIndicator />
-      ) : (
-        <>
-          <InfoContainer>
-            <Text>{album.album}</Text>
-            <Subtext>{album.artist}</Subtext>
-          </InfoContainer>
-          <ListContainer>
-            <SelectableList activeIndex={index} options={options} />
-          </ListContainer>
-        </>
-      )}
+      <InfoContainer>
+        <Text>{album.name}</Text>
+        <Subtext>{artistNames}</Subtext>
+      </InfoContainer>
+      <ListContainer>
+        <SelectableList activeIndex={index} options={options} />
+      </ListContainer>
     </Container>
   );
 };
