@@ -6,6 +6,8 @@ import React, {
   useState,
 } from 'react';
 
+import { useSpotifyWebPlaybackSdk } from 'hooks';
+
 export type ApiCache = {
   user?: SpotifyApi.CurrentUsersProfileResponse;
   userAlbums?: SpotifyApi.UsersSavedAlbumsResponse;
@@ -37,6 +39,8 @@ export interface SpotifyServiceHook {
   loggedIn: boolean;
   spotifyState: SpotifyState;
   updateApiCache: (val: Partial<ApiCache>) => void;
+  player?: Spotify.SpotifyPlayer;
+  deviceId: string;
 }
 
 /**
@@ -44,6 +48,11 @@ export interface SpotifyServiceHook {
  */
 export const useSpotifyService = (): SpotifyServiceHook => {
   const [spotifyState, setSpotifyState] = useContext(SpotifyContext);
+  const { player, deviceId } = useSpotifyWebPlaybackSdk({
+    name: "iPod Classic",
+    getOAuthToken: () =>
+      Promise.resolve(localStorage.getItem("spotify_access_token") ?? "")
+  });
 
   const fetchToken = useCallback(
     async (code: string, state: string) => {
@@ -115,7 +124,9 @@ export const useSpotifyService = (): SpotifyServiceHook => {
   return {
     loggedIn: spotifyState.loggedIn,
     spotifyState,
-    updateApiCache
+    updateApiCache,
+    player: player ?? undefined,
+    deviceId
   };
 };
 
