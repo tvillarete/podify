@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { SelectableList, SelectableListOption } from 'components';
 import { useEventListener, useScrollHandler } from 'hooks';
@@ -52,16 +52,22 @@ const BacksideContent = ({ album, setPlayingAlbum }: Props) => {
 
   useEventListener("centerclick", () => setPlayingAlbum(true));
 
-  useEffect(() => {
+  const handleData = useCallback(() => {
+    const trackUris = album.tracks.items.map(({ uri }) => uri);
+
     setOptions(
       album.tracks.items.map((track, index) => ({
         label: track.name,
         value: track,
-        songIndex: index
-        // playlist: data.album
+        songIndex: index,
+        uris: trackUris
       }))
     );
   }, [album.tracks.items]);
+
+  useEffect(() => {
+    handleData();
+  }, [handleData]);
 
   const artistNames = useMemo(
     () => album.artists.map(artist => artist.name).join(", "),

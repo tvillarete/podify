@@ -18,10 +18,10 @@ const CoverFlowView = () => {
   >("me/albums?limit=50");
 
   useEffect(() => {
-    if (data?.items && !error) {
+    if (data?.items && !error && !albums.length) {
       setAlbums(data.items.map(({ album }) => album));
     }
-  }, [data, error]);
+  }, [albums.length, data, error]);
 
   return (
     <Container>

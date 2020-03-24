@@ -3,18 +3,19 @@ import { useCallback } from 'react';
 import { useSpotifyService } from 'services/spotify';
 
 interface SpotifyPlayerHook {
-  play: (uri: string) => void;
+  play: (uris: string[], offset?: number) => void;
 }
 
 const useSpotifyPlayer = (): SpotifyPlayerHook => {
-  const { spotifyState, deviceId } = useSpotifyService();
-  const { accessToken } = spotifyState;
+  const { spotifyState } = useSpotifyService();
+  const { accessToken, deviceId } = spotifyState;
 
   const play = useCallback(
-    (uri: string) => {
+    (uris: string[], offset?: number) => {
+      console.log("Playing:", { uris });
       fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
         method: "PUT",
-        body: JSON.stringify({ uris: [uri] }),
+        body: JSON.stringify({ uris, offset: { position: offset ?? 0 } }),
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`

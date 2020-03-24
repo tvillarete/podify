@@ -6,6 +6,7 @@ import { useAudioService } from 'services/audio';
 import { useWindowService } from 'services/window';
 
 import useEventListener from './useEventListener';
+import useSpotifyPlayer from './useSpotifyPlayer';
 
 /** Accepts a list of options and will maintain a scroll index capped at the list's length. */
 const useScrollHandler = (
@@ -16,6 +17,7 @@ const useScrollHandler = (
 ): [number] => {
   const { showWindow, windowStack, setPreview } = useWindowService();
   const { play } = useAudioService();
+  const { play: playOnSpotify } = useSpotifyPlayer();
   const [index, setIndex] = useState(0);
   const timeoutIdRef = useRef<any>();
   /** Only fire events on the top-most view. */
@@ -84,10 +86,14 @@ const useScrollHandler = (
       play(option.playlist, option.songIndex);
     }
 
+    if (option.uris) {
+      playOnSpotify(option.uris, option.songIndex);
+    }
+
     if (option.link) {
       window.open(option.link, "_blank");
     }
-  }, [index, isActive, options, play, showWindow]);
+  }, [index, isActive, options, play, playOnSpotify, showWindow]);
 
   useEffect(() => {
     if (!options || !options[0]) return;

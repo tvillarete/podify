@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import ViewOptions, { NowPlayingView } from 'App/views';
 import { SelectableList, SelectableListOption } from 'components';
@@ -18,18 +18,25 @@ const AlbumView = ({ id = "0" }: Props) => {
     `albums/${id}`
   );
 
+  const setupOptions = useCallback(() => {
+    const trackUris = data!.tracks.items.map(({ uri }) => uri);
+
+    setOptions(
+      data!.tracks.items.map((track, index) => ({
+        label: track.name,
+        value: () => <NowPlayingView uri={track.uri} />,
+        viewId: ViewOptions.nowPlaying.id,
+        uris: trackUris,
+        songIndex: index
+      }))
+    );
+  }, [data]);
+
   useEffect(() => {
     if (data && !options.length) {
-      setOptions(
-        data!.tracks.items.map((track, index) => ({
-          label: track.name,
-          value: () => <NowPlayingView />,
-          viewId: ViewOptions.nowPlaying.id,
-          songIndex: index
-        }))
-      );
+      setupOptions();
     }
-  }, [data, options]);
+  }, [data, options, setupOptions]);
 
   return (
     <SelectableList loading={loading} options={options} activeIndex={index} />

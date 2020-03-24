@@ -168,6 +168,7 @@ const WindowProvider = ({ children }: Props) => {
       component: Views.AuthView
     }
   ];
+
   const [windowState, setWindowState] = useState<WindowState>({
     windowStack,
     headerTitle: ViewOptions.auth.title,

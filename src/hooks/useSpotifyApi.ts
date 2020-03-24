@@ -1,5 +1,5 @@
 import { useFetch } from 'hooks';
-import { ApiCache, useSpotifyService } from 'services/spotify';
+import { useSpotifyService } from 'services/spotify';
 
 export interface SpotifyApiHook<TType> {
   loading: boolean;
@@ -9,7 +9,6 @@ export interface SpotifyApiHook<TType> {
 
 const useSpotifyApi = <TType>(
   endpoint: string,
-  cacheKey?: keyof ApiCache,
   optionsOverride?: RequestInit
 ): SpotifyApiHook<TType> => {
   const { spotifyState } = useSpotifyService();

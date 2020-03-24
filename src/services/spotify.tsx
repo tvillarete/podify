@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  memo,
   useCallback,
   useContext,
   useEffect,
@@ -8,17 +9,14 @@ import React, {
 
 import { useSpotifyWebPlaybackSdk } from 'hooks';
 
-export type ApiCache = {
-  user?: SpotifyApi.CurrentUsersProfileResponse;
-  userAlbums?: SpotifyApi.UsersSavedAlbumsResponse;
-};
-
 export interface SpotifyState {
   error?: string;
   loggedIn: boolean;
+  player?: Spotify.SpotifyPlayer;
+  deviceId?: string;
   accessToken?: string;
   refreshToken?: string;
-  apiCache: ApiCache;
+  mountingPlayer?: boolean;
 }
 
 type SpotifyContextType = [
@@ -29,8 +27,7 @@ type SpotifyContextType = [
 const SpotifyContext = createContext<SpotifyContextType>([
   {
     loggedIn: false,
-    accessToken: localStorage.getItem("spotify_access_token") ?? undefined,
-    apiCache: {}
+    accessToken: localStorage.getItem("spotify_access_token") ?? undefined
   },
   () => {}
 ]);
@@ -38,9 +35,8 @@ const SpotifyContext = createContext<SpotifyContextType>([
 export interface SpotifyServiceHook {
   loggedIn: boolean;
   spotifyState: SpotifyState;
-  updateApiCache: (val: Partial<ApiCache>) => void;
   player?: Spotify.SpotifyPlayer;
-  deviceId: string;
+  deviceId?: string;
 }
 
 /**
@@ -48,11 +44,38 @@ export interface SpotifyServiceHook {
  */
 export const useSpotifyService = (): SpotifyServiceHook => {
   const [spotifyState, setSpotifyState] = useContext(SpotifyContext);
-  const { player, deviceId } = useSpotifyWebPlaybackSdk({
-    name: "iPod Classic",
-    getOAuthToken: () =>
-      Promise.resolve(localStorage.getItem("spotify_access_token") ?? "")
+
+  const handlePlayerSetupCompletion = useCallback(
+    (player: Spotify.SpotifyPlayer, deviceId: string) => {
+      console.log("Player setup complete. setting spotify state...");
+      setSpotifyState(prevState => ({
+        ...prevState,
+        mountingPlayer: false,
+        player,
+        deviceId
+      }));
+    },
+    [setSpotifyState]
+  );
+
+  const { setupPlayer } = useSpotifyWebPlaybackSdk({
+    onPlayerSetupComplete: handlePlayerSetupCompletion
   });
+
+  useEffect(() => {
+    if (!spotifyState.player && !spotifyState.mountingPlayer) {
+      setupPlayer();
+      setSpotifyState(prevState => ({
+        ...prevState,
+        mountingPlayer: true
+      }));
+    }
+  }, [
+    setSpotifyState,
+    setupPlayer,
+    spotifyState.mountingPlayer,
+    spotifyState.player
+  ]);
 
   const fetchToken = useCallback(
     async (code: string, state: string) => {
@@ -90,18 +113,6 @@ export const useSpotifyService = (): SpotifyServiceHook => {
     [setSpotifyState]
   );
 
-  const updateApiCache = useCallback(
-    (val: Partial<ApiCache>) =>
-      setSpotifyState(prevState => ({
-        ...prevState,
-        apiCache: {
-          ...prevState.apiCache,
-          val
-        }
-      })),
-    [setSpotifyState]
-  );
-
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code") ?? "";
@@ -123,10 +134,7 @@ export const useSpotifyService = (): SpotifyServiceHook => {
 
   return {
     loggedIn: spotifyState.loggedIn,
-    spotifyState,
-    updateApiCache,
-    player: player ?? undefined,
-    deviceId
+    spotifyState
   };
 };
 
@@ -136,8 +144,7 @@ interface Props {
 
 const SpotifyProvider = ({ children }: Props) => {
   const [spotifyState, setSpotifyState] = useState<SpotifyState>({
-    loggedIn: false,
-    apiCache: {}
+    loggedIn: false
   });
 
   return (
@@ -147,4 +154,4 @@ const SpotifyProvider = ({ children }: Props) => {
   );
 };
 
-export default SpotifyProvider;
+export default memo(SpotifyProvider);
