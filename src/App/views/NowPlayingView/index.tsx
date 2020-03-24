@@ -5,7 +5,7 @@ import { NowPlaying } from 'components';
 import { useMenuHideWindow } from 'hooks';
 import { useWindowService } from 'services/window';
 
-const NowPlayingView = () => {
+const NowPlayingView = ({ uri }: { uri?: string }) => {
   useMenuHideWindow(ViewOptions.nowPlaying.id);
   const { hideWindow } = useWindowService();
 

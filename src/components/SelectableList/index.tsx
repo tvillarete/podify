@@ -16,8 +16,9 @@ export interface SelectableListOption {
   preview?: PREVIEW;
   link?: string;
   image?: string;
-  songIndex?: number;
   playlist?: Song[];
+  uris?: string[];
+  songIndex?: number;
 }
 
 const Container = styled.div`

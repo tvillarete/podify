@@ -2,6 +2,7 @@ import React from 'react';
 
 import { ScrollWheel } from 'components';
 import AudioProvider from 'services/audio';
+import SpotifyProvider from 'services/spotify';
 import WindowProvider from 'services/window';
 import styled, { createGlobalStyle } from 'styled-components';
 
@@ -70,15 +71,17 @@ const App: React.FC = () => {
   return (
     <Container>
       <GlobalStyles />
-      <AudioProvider>
-        <WindowProvider>
-          <Shell>
-            <Interface />
-            <ScrollWheel />
-            <Audio />
-          </Shell>
-        </WindowProvider>
-      </AudioProvider>
+      <SpotifyProvider>
+        <AudioProvider>
+          <WindowProvider>
+            <Shell>
+              <Interface />
+              <ScrollWheel />
+              <Audio />
+            </Shell>
+          </WindowProvider>
+        </AudioProvider>
+      </SpotifyProvider>
     </Container>
   );
 };

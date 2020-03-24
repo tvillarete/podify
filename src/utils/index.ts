@@ -24,3 +24,5 @@ export const formatTime = (seconds = 0, guide = seconds) => {
 export const setDocumentSongTitle = (song?: Song) => {
   document.title = song ? `${song.name} – iPod.js` : "iPod.js";
 };
+
+export const isDev = () => window.location.origin.includes('localhost:3000');

@@ -1,31 +1,30 @@
 import React, { useEffect, useState } from 'react';
 
-import { useQuery } from '@apollo/react-hooks';
 import ViewOptions, { AlbumView } from 'App/views';
 import { SelectableList, SelectableListOption } from 'components';
 import { useMenuHideWindow, useScrollHandler } from 'hooks';
-import { ARTIST, ArtistQuery } from 'queries';
-import { getUrlFromPath } from 'utils';
+import useSpotifyApi from 'hooks/useSpotifyApi';
 
 interface Props {
   name: string;
+  id?: string;
 }
 
-const ArtistView = ({ name }: Props) => {
+const ArtistView = ({ name, id = "0" }: Props) => {
   useMenuHideWindow(ViewOptions.artist.id);
-  const { loading, error, data } = useQuery<ArtistQuery>(ARTIST, {
-    variables: { name }
-  });
   const [options, setOptions] = useState<SelectableListOption[]>([]);
   const [index] = useScrollHandler(ViewOptions.artist.id, options);
+  const { loading, data, error } = useSpotifyApi<
+    SpotifyApi.ArtistsAlbumsResponse
+  >(`artists/${id}/albums`);
 
   useEffect(() => {
-    if (data && data.artist && !error) {
+    if (data?.items && !error) {
       setOptions(
-        data.artist.map(result => ({
-          label: result.album,
-          value: () => <AlbumView name={result.album} />,
-          image: getUrlFromPath(result.artwork),
+        data.items.map(album => ({
+          label: album.name,
+          value: () => <AlbumView name={album.name} id={album.id} />,
+          image: album.images[0].url,
           viewId: ViewOptions.album.id
         }))
       );

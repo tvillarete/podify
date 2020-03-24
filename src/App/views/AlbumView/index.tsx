@@ -1,36 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { useQuery } from '@apollo/react-hooks';
 import ViewOptions, { NowPlayingView } from 'App/views';
 import { SelectableList, SelectableListOption } from 'components';
 import { useMenuHideWindow, useScrollHandler } from 'hooks';
-import { ALBUM, AlbumQuery } from 'queries';
+import useSpotifyApi from 'hooks/useSpotifyApi';
 
 interface Props {
   name: string;
+  id?: string;
 }
 
-const AlbumView = ({ name }: Props) => {
+const AlbumView = ({ id = "0" }: Props) => {
   useMenuHideWindow(ViewOptions.album.id);
-  const { loading, error, data } = useQuery<AlbumQuery>(ALBUM, {
-    variables: { name }
-  });
   const [options, setOptions] = useState<SelectableListOption[]>([]);
   const [index] = useScrollHandler(ViewOptions.album.id, options);
+  const { loading, data } = useSpotifyApi<SpotifyApi.SingleAlbumResponse>(
+    `albums/${id}`
+  );
+
+  const setupOptions = useCallback(() => {
+    const trackUris = data!.tracks.items.map(({ uri }) => uri);
+
+    setOptions(
+      data!.tracks.items.map((track, index) => ({
+        label: track.name,
+        value: () => <NowPlayingView uri={track.uri} />,
+        viewId: ViewOptions.nowPlaying.id,
+        uris: trackUris,
+        songIndex: index
+      }))
+    );
+  }, [data]);
 
   useEffect(() => {
-    if (data && data.album && !error) {
-      setOptions(
-        data.album.map((song, index) => ({
-          label: song.name,
-          value: () => <NowPlayingView />,
-          viewId: ViewOptions.nowPlaying.id,
-          songIndex: index,
-          playlist: data.album
-        }))
-      );
+    if (data && !options.length) {
+      setupOptions();
     }
-  }, [data, error]);
+  }, [data, options, setupOptions]);
 
   return (
     <SelectableList loading={loading} options={options} activeIndex={index} />

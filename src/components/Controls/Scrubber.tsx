@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LoadingIndicator, Unit } from 'components';
 import { useEventListener, useInterval } from 'hooks';
 import { useAudioService } from 'services/audio';
+import { useSpotifyService } from 'services/spotify';
 import styled from 'styled-components';
 import { formatTime } from 'utils';
 
@@ -42,38 +43,38 @@ const Scubber = ({ isScrubbing }: Props) => {
   const [maxTime, setMaxTime] = useState(0);
   const { playing, loading } = useAudioService();
   const percent = Math.round((currentTime / maxTime) * 100);
+  const {
+    spotifyState: { player, playerState }
+  } = useSpotifyService();
 
   const scrubForward = useCallback(() => {
     if (currentTime === maxTime || !isScrubbing) return;
-    const audio = document.getElementById("ipodAudio") as HTMLAudioElement;
     const newTime = currentTime + 1;
 
     if (newTime < maxTime) {
-      audio.currentTime = newTime;
+      player?.seek(newTime);
       setCurrentTime(newTime);
     }
-  }, [currentTime, isScrubbing, maxTime]);
+  }, [currentTime, isScrubbing, maxTime, player]);
 
   const scrubBackward = useCallback(() => {
     if (currentTime === 0 || !isScrubbing) return;
-    const audio = document.getElementById("ipodAudio") as HTMLAudioElement;
     const newTime = currentTime - 1;
 
     if (newTime >= 0) {
-      audio.currentTime = newTime;
+      player?.seek(newTime);
       setCurrentTime(newTime);
     }
-  }, [currentTime, isScrubbing]);
+  }, [currentTime, isScrubbing, player]);
 
   const refresh = useCallback(
     (force?: boolean) => {
       if (playing || force) {
-        const audio = document.getElementById("ipodAudio") as HTMLAudioElement;
-        setCurrentTime(audio.currentTime);
-        setMaxTime(audio.duration);
+        setCurrentTime(playerState?.position ?? 0);
+        setMaxTime(playerState?.duration ?? 0);
       }
     },
-    [playing]
+    [playerState, playing]
   );
 
   useEventListener("forwardscroll", scrubForward);

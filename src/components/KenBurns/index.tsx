@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useInterval } from 'hooks';
 import styled from 'styled-components';
-import { getUrlFromPath } from 'utils';
 
 const Container = styled.div``;
 
@@ -72,7 +71,7 @@ const KenBurns = ({ urls }: Props) => {
         <Image
           key={`ken-burns-${path}`}
           zIndex={3 - index}
-          src={getUrlFromPath(path)}
+          src={path}
           startedAnimation={index === 0 || transitioning}
           isHidden={transitioning && index === 0}
         />

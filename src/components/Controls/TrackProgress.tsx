@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LoadingIndicator, Unit } from 'components';
 import { useInterval } from 'hooks';
 import { useAudioService } from 'services/audio';
+import { useSpotifyService } from 'services/spotify';
 import styled from 'styled-components';
 import { formatTime } from 'utils';
 
@@ -38,22 +39,32 @@ const TrackProgress = () => {
   const [maxTime, setMaxTime] = useState(0);
   const { playing, loading } = useAudioService();
   const percent = Math.round((currentTime / maxTime) * 100);
+  const {
+    spotifyState: { playerState, player }
+  } = useSpotifyService();
 
   const refresh = useCallback(
-    (force?: boolean) => {
+    async (force?: boolean) => {
       if (playing || force) {
-        const audio = document.getElementById("ipodAudio") as HTMLAudioElement;
-        setCurrentTime(audio.currentTime);
-        setMaxTime(audio.duration);
+        const currentState = await player?.getCurrentState();
+        const currentTime =
+          (currentState?.position ?? playerState?.position ?? 0) / 1000;
+        const maxTime =
+          (currentState?.duration ?? playerState?.duration ?? 0) / 1000;
+
+        setCurrentTime(currentTime);
+        setMaxTime(maxTime);
       }
     },
-    [playing]
+    [player, playerState, playing]
   );
 
   /** Update the progress bar every second. */
   useInterval(refresh, 1000);
 
-  useEffect(() => refresh(true), [refresh]);
+  useEffect(() => {
+    refresh(true);
+  }, [refresh]);
 
   return (
     <Container>

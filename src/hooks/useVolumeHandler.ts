@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useSpotifyService } from 'services/spotify';
+
 import useEventListener from './useEventListener';
 
 interface VolumeHandlerHook {
@@ -13,11 +15,18 @@ const useVolumeHandler = (): VolumeHandlerHook => {
   const [volume, setVolume] = useState(100);
   const [enabled, setIsEnabled] = useState(true);
   const timeoutIdRef = useRef<any>();
+  const {
+    spotifyState: { player }
+  } = useSpotifyService();
+
+  const handleMount = useCallback(async () => {
+    const currentVolume = ((await player?.getVolume()) ?? 0) * 100;
+
+    setVolume(currentVolume);
+  }, [player]);
 
   useEffect(() => {
-    const audio = document.getElementById("ipodAudio") as HTMLAudioElement;
-
-    setVolume(audio.volume * 100);
+    handleMount();
 
     /** clear the timeout to prevent memory leaks. */
     return () => {
@@ -25,7 +34,7 @@ const useVolumeHandler = (): VolumeHandlerHook => {
         clearTimeout(timeoutIdRef.current);
       }
     };
-  }, []);
+  }, [handleMount]);
 
   /** This is used to disable and reset the "active" timeout. */
   const setEnabled = useCallback((val: boolean) => {
@@ -53,23 +62,21 @@ const useVolumeHandler = (): VolumeHandlerHook => {
     }, 3000);
   }, [enabled]);
 
-  const increaseVolume = useCallback(() => {
+  const increaseVolume = useCallback(async () => {
     setActiveState();
     if (volume === 100 || !enabled) return;
-    const audio = document.getElementById("ipodAudio") as HTMLAudioElement;
 
-    audio.volume = (volume + 4) / 100;
+    player?.setVolume((volume + 4) / 100);
     setVolume(volume + 4);
-  }, [volume, enabled, setActiveState]);
+  }, [enabled, player, setActiveState, volume]);
 
   const decreaseVolume = useCallback(() => {
     setActiveState();
     if (volume === 0 || !enabled) return;
-    const audio = document.getElementById("ipodAudio") as HTMLAudioElement;
 
-    audio.volume = (volume - 4) / 100;
+    player?.setVolume((volume - 4) / 100);
     setVolume(volume - 4);
-  }, [volume, enabled, setActiveState]);
+  }, [setActiveState, volume, enabled, player]);
 
   useEventListener("forwardscroll", increaseVolume);
   useEventListener("backwardscroll", decreaseVolume);

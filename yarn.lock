@@ -2059,6 +2059,16 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
+"@types/spotify-api@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/spotify-api/-/spotify-api-0.0.2.tgz#83bccd04fbc00de01d515418d77d658f277ef6f5"
+  integrity sha512-6WlUsg2xaSyxHZShTy+KNe4Hm8foDtaEVLe6+ID5DGOoByhcSKioCV2kPN6E8swgf2IHn+1o9knlbryYmoL0fw==
+
+"@types/spotify-web-playback-sdk@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@types/spotify-web-playback-sdk/-/spotify-web-playback-sdk-0.1.7.tgz#44a9038f6a96a67a83b4495348e49c71b279f74f"
+  integrity sha512-6LukYGr1EMux3Ak1K0htq+lN2pU1G4o8m6E/HzQvXkJzWHEQkyQb0MRJ+lAM0nzY602Sqqd1IKNCRAZ2BQDx0A==
+
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
@@ -2278,6 +2288,13 @@
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
+
+"@welldone-software/why-did-you-render@^4.0.5":
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/@welldone-software/why-did-you-render/-/why-did-you-render-4.0.5.tgz#15a8de16fc84307ab401fb3f859d9a94f2b5334c"
+  integrity sha512-igBq0kGqKUdwMUQFgPkDzKQS+8MHqhDvF2j2w+05yS7LqcIIZyBL7FRYf1Hvm1QABx86prS7xwiIJa0U0ev5JA==
+  dependencies:
+    lodash "^4"
 
 "@wry/context@^0.4.0":
   version "0.4.4"
@@ -7132,7 +7149,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-"lodash@>=3.5 <5", lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.5:
+"lodash@>=3.5 <5", lodash@^4, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.5:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==

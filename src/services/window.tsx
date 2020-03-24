@@ -43,6 +43,8 @@ export interface WindowServiceHook {
   showWindow: (window: WindowOptions) => void;
   /** Given an id, remove the window from the stack (otherwise, pop the top window). */
   hideWindow: (id?: string) => void;
+  /** Removes all windows and adds a new base window. */
+  resetWindowStack: (window: WindowOptions) => void;
   /** Returns an array of WindowOptions. */
   windowStack: WindowOptions[];
   /** Checks if the current window's id matches the given id.
@@ -101,6 +103,17 @@ export const useWindowService = (): WindowServiceHook => {
     [setWindowState, windowState.windowStack.length]
   );
 
+  const resetWindowStack = useCallback(
+    (window: WindowOptions) => {
+      setWindowState(prevWindowState => ({
+        ...prevWindowState,
+        windowStack: [window],
+        headerTitle: ViewOptions[window.id].title
+      }));
+    },
+    [setWindowState]
+  );
+
   const isWindowActive = useCallback(
     (id: string) => {
       const { windowStack } = windowState;
@@ -133,6 +146,7 @@ export const useWindowService = (): WindowServiceHook => {
   return {
     showWindow,
     hideWindow,
+    resetWindowStack,
     isWindowActive,
     windowStack: windowState.windowStack,
     headerTitle: windowState.headerTitle,
@@ -149,14 +163,15 @@ interface Props {
 const WindowProvider = ({ children }: Props) => {
   const windowStack: WindowOptions[] = [
     {
-      id: ViewOptions.home.id,
+      id: ViewOptions.auth.id,
       type: Views.WINDOW_TYPE.SPLIT,
-      component: Views.HomeView
+      component: Views.AuthView
     }
   ];
+
   const [windowState, setWindowState] = useState<WindowState>({
     windowStack,
-    headerTitle: ViewOptions.home.title,
+    headerTitle: ViewOptions.auth.title,
     preview: PREVIEW.MUSIC
   });
 

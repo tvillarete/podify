@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
-import { PREVIEW } from 'App/previews';
-import ViewOptions, { AboutView } from 'App/views';
-import { SelectableList, SelectableListOption } from 'components';
-import { useMenuHideWindow, useScrollHandler } from 'hooks';
+import { PREVIEW } from "App/previews";
+import ViewOptions, { AboutView } from "App/views";
+import { SelectableList, SelectableListOption } from "components";
+import { useMenuHideWindow, useScrollHandler } from "hooks";
 
 const SettingsView = () => {
   useMenuHideWindow(ViewOptions.settings.id);
