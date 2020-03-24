@@ -19,7 +19,8 @@ declare global {
 }
 
 export const useSpotifyWebPlaybackSdk = ({
-  onPlayerSetupComplete
+  onPlayerSetupComplete,
+  onPlayerStateChanged = noop
 }: Options) => {
   const [isReady, setIsReady] = useState(false);
   const [deviceId, setDeviceId] = useState("");
@@ -34,7 +35,7 @@ export const useSpotifyWebPlaybackSdk = ({
         const token = await Promise.resolve(
           localStorage.getItem("spotify_access_token") ?? ""
         );
-        console.log(token);
+        
         cb(token);
       }
     });
@@ -52,22 +53,22 @@ export const useSpotifyWebPlaybackSdk = ({
 
   const mountListeners = useCallback(() => {
     const player = playerRef.current!;
-    console.log("Mounting listeners");
 
     player.addListener("account_error", noop);
     player.addListener("ready", handleReady);
     player.addListener("initialization_error", noop);
     player.addListener("authentication_error", noop);
     player.addListener("not_ready", noop);
-    player.addListener("player_state_changed", noop);
+    player.addListener("player_state_changed", playerState =>
+      onPlayerStateChanged(playerState)
+    );
     setListenersMounted(true);
 
     return () => {
       player.removeListener("account_error", noop);
       player.removeListener("ready", handleReady);
-      player.removeListener("player_state_changed", noop);
     };
-  }, [handleReady]);
+  }, [handleReady, onPlayerStateChanged]);
 
   useEffect(() => {
     if (isReady && !listenersMounted) {

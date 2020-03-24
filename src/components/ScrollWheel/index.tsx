@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 
-import { useEventListener } from 'hooks';
+import { useEventListener, useSpotifyPlayer } from 'hooks';
 import { useAudioService } from 'services/audio';
 
 import Knob from './Knob';
@@ -27,11 +27,12 @@ const forwardScrollEvent = new Event("forwardscroll");
 const backwardScrollEvent = new Event("backwardscroll");
 const wheelClickEvent = new Event("wheelclick");
 const menuClickEvent = new Event("menuclick");
-const backClickEvent = new Event("backclick");
+// const backClickEvent = new Event("backclick");
 
 const ScrollWheel = () => {
   const [count, setCount] = useState(0);
-  const { togglePause, nextSong } = useAudioService();
+  const { togglePause } = useAudioService();
+  const { skipNext, skipPrevious } = useSpotifyPlayer();
 
   const handleCenterClick = useCallback(
     () => window.dispatchEvent(centerClickEvent),
@@ -59,14 +60,15 @@ const ScrollWheel = () => {
           togglePause();
           break;
         case WHEEL_QUADRANT.LEFT:
-          window.dispatchEvent(backClickEvent);
+          // window.dispatchEvent(backClickEvent);
+          skipPrevious();
           break;
         case WHEEL_QUADRANT.RIGHT:
-          nextSong();
+          skipNext();
           break;
       }
     },
-    [nextSong, togglePause]
+    [skipNext, skipPrevious, togglePause]
   );
 
   /** Allows for keyboard navigation. */

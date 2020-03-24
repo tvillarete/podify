@@ -13,6 +13,7 @@ export interface SpotifyState {
   error?: string;
   loggedIn: boolean;
   player?: Spotify.SpotifyPlayer;
+  playerState?: Spotify.PlaybackState;
   deviceId?: string;
   accessToken?: string;
   refreshToken?: string;
@@ -36,6 +37,7 @@ export interface SpotifyServiceHook {
   loggedIn: boolean;
   spotifyState: SpotifyState;
   player?: Spotify.SpotifyPlayer;
+  playerState?: Spotify.PlaybackState;
   deviceId?: string;
 }
 
@@ -47,7 +49,6 @@ export const useSpotifyService = (): SpotifyServiceHook => {
 
   const handlePlayerSetupCompletion = useCallback(
     (player: Spotify.SpotifyPlayer, deviceId: string) => {
-      console.log("Player setup complete. setting spotify state...");
       setSpotifyState(prevState => ({
         ...prevState,
         mountingPlayer: false,
@@ -58,8 +59,19 @@ export const useSpotifyService = (): SpotifyServiceHook => {
     [setSpotifyState]
   );
 
+  const handlePlayerStateChange = useCallback(
+    (playerState?: Spotify.PlaybackState) => {
+      setSpotifyState(prevState => ({
+        ...prevState,
+        playerState
+      }));
+    },
+    [setSpotifyState]
+  );
+
   const { setupPlayer } = useSpotifyWebPlaybackSdk({
-    onPlayerSetupComplete: handlePlayerSetupCompletion
+    onPlayerSetupComplete: handlePlayerSetupCompletion,
+    onPlayerStateChanged: handlePlayerStateChange
   });
 
   useEffect(() => {

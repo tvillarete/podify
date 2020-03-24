@@ -18,6 +18,7 @@ interface AudioState {
   playlist: Song[];
   source?: Song;
   songIndex: number;
+  uri?: string;
 }
 
 type AudioContextType = [
@@ -38,6 +39,7 @@ const AudioContext = createContext<AudioContextType>([
 
 export interface AudioServiceHook {
   source?: Song;
+  uri?: string;
   songIndex: number;
   playing: boolean;
   loading: boolean;
@@ -47,6 +49,7 @@ export interface AudioServiceHook {
   nextSong: () => void;
   prevSong: () => void;
   setLoading: (value: boolean) => void;
+  setPlaying: (val: boolean, uri?: string) => void;
 }
 
 export const useAudioService = (): AudioServiceHook => {
@@ -117,17 +120,29 @@ export const useAudioService = (): AudioServiceHook => {
     [audioState, setAudioState]
   );
 
+  const setPlaying = useCallback(
+    (val: boolean, uri?: string) =>
+      setAudioState(prevState => ({
+        ...prevState,
+        playing: val,
+        uri: uri ?? prevState.uri
+      })),
+    [setAudioState]
+  );
+
   return {
     source: audioState.source,
     songIndex: audioState.songIndex,
     playlist: audioState.playlist,
     playing: audioState.playing,
     loading: audioState.loading,
+    uri: audioState.uri,
     play,
     togglePause,
     nextSong,
     prevSong,
-    setLoading
+    setLoading,
+    setPlaying
   };
 };
 

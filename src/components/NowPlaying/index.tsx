@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { Controls, Unit } from 'components';
-import { useAudioService } from 'services/audio';
-import { useWindowService } from 'services/window';
+import { useSpotifyService } from 'services/spotify';
 import styled from 'styled-components';
-import { getUrlFromPath } from 'utils';
 
 const Container = styled.div`
   height: 100%;
@@ -65,9 +63,11 @@ interface Props {
 }
 
 const NowPlaying = ({ hideArtwork, onHide }: Props) => {
-  const { hideWindow } = useWindowService();
-  const { source, songIndex, playlist } = useAudioService();
+  const { spotifyState } = useSpotifyService();
+  const { playerState } = spotifyState;
   const [windowHidden, setWindowHidden] = useState(false);
+
+  const currentTrack = playerState?.track_window.current_track;
 
   const handleWindowHide = useCallback(() => {
     if (!windowHidden) {
@@ -77,22 +77,22 @@ const NowPlaying = ({ hideArtwork, onHide }: Props) => {
   }, [onHide, windowHidden]);
 
   useEffect(() => {
-    if (!source) {
+    if (playerState && !playerState?.track_window.current_track) {
       handleWindowHide();
     }
-  }, [handleWindowHide, hideWindow, source]);
+  }, [handleWindowHide, playerState]);
 
-  return source ? (
+  return currentTrack ? (
     <Container>
       <MetadataContainer>
         <ArtworkContainer isHidden={hideArtwork}>
-          <Artwork src={getUrlFromPath(source.artwork)}></Artwork>
+          <Artwork src={currentTrack.album.images[0].url}></Artwork>
         </ArtworkContainer>
         <InfoContainer>
-          <Text>{source.name}</Text>
-          <Subtext>{source.artist}</Subtext>
-          <Subtext>{source.album}</Subtext>
-          <Subtext>{`${songIndex + 1} of ${playlist.length}`}</Subtext>
+          <Text>{currentTrack.name}</Text>
+          <Subtext>{currentTrack.artists[0].name}</Subtext>
+          <Subtext>{currentTrack.album.name}</Subtext>
+          {/* <Subtext>{`${songIndex + 1} of ${currentTrack.album.}`}</Subtext> */}
         </InfoContainer>
       </MetadataContainer>
       <ControlsContainer>
