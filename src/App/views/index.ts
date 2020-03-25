@@ -8,6 +8,8 @@ export { default as AlbumsView } from "./AlbumsView";
 export { default as AlbumView } from "./AlbumView";
 export { default as AuthView } from "./AuthView";
 export { default as NowPlayingView } from "./NowPlayingView";
+export { default as PlaylistsView } from "./PlaylistsView";
+export { default as PlaylistView } from "./PlaylistView";
 export { default as GamesView } from "./GamesView";
 export { default as BrickGameView } from "./BrickGameView";
 export { default as SettingsView } from "./SettingsView";
@@ -43,6 +45,8 @@ export const ViewOptions: Record<string, ViewOption> = {
     title: "Now Playing",
     type: WINDOW_TYPE.FULL
   },
+  playlists: { id: "playlists", title: "Playlists", type: WINDOW_TYPE.FULL },
+  playlist: { id: "playlist", title: "Playlist", type: WINDOW_TYPE.FULL },
   brickGame: { id: "brickGame", title: "Brick", type: WINDOW_TYPE.FULL },
 
   // CoverFlow view

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { PREVIEW } from 'App/previews';
-import { AlbumsView, ArtistsView } from 'App/views';
+import { AlbumsView, ArtistsView, PlaylistsView } from 'App/views';
 import { SelectableList, SelectableListOption } from 'components';
 import { useMenuHideWindow, useScrollHandler } from 'hooks';
 
@@ -20,6 +20,12 @@ const MusicView = () => {
       label: "Albums",
       value: () => <AlbumsView />,
       viewId: ViewOptions.albums.id,
+      preview: PREVIEW.MUSIC
+    },
+    {
+      label: "Playlists",
+      value: () => <PlaylistsView />,
+      viewId: ViewOptions.playlists.id,
       preview: PREVIEW.MUSIC
     }
   ];

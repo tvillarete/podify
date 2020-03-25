@@ -36,9 +36,6 @@ const SpotifyContext = createContext<SpotifyContextType>([
 export interface SpotifyServiceHook {
   loggedIn: boolean;
   spotifyState: SpotifyState;
-  player?: Spotify.SpotifyPlayer;
-  playerState?: Spotify.PlaybackState;
-  deviceId?: string;
 }
 
 /**

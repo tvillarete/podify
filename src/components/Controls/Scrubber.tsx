@@ -50,9 +50,10 @@ const Scubber = ({ isScrubbing }: Props) => {
   const scrubForward = useCallback(() => {
     if (currentTime === maxTime || !isScrubbing) return;
     const newTime = currentTime + 1;
+    const newTimeMillis = newTime * 1000;
 
     if (newTime < maxTime) {
-      player?.seek(newTime);
+      player?.seek(newTimeMillis);
       setCurrentTime(newTime);
     }
   }, [currentTime, isScrubbing, maxTime, player]);
@@ -60,21 +61,28 @@ const Scubber = ({ isScrubbing }: Props) => {
   const scrubBackward = useCallback(() => {
     if (currentTime === 0 || !isScrubbing) return;
     const newTime = currentTime - 1;
+    const newTimeMillis = newTime * 1000;
 
     if (newTime >= 0) {
-      player?.seek(newTime);
+      player?.seek(newTimeMillis);
       setCurrentTime(newTime);
     }
   }, [currentTime, isScrubbing, player]);
 
   const refresh = useCallback(
-    (force?: boolean) => {
+    async (force?: boolean) => {
       if (playing || force) {
-        setCurrentTime(playerState?.position ?? 0);
-        setMaxTime(playerState?.duration ?? 0);
+        const currentState = await player?.getCurrentState();
+        const currentTime =
+          (currentState?.position ?? playerState?.position ?? 0) / 1000;
+        const maxTime =
+          (currentState?.duration ?? playerState?.duration ?? 0) / 1000;
+
+        setCurrentTime(currentTime);
+        setMaxTime(maxTime);
       }
     },
-    [playerState, playing]
+    [player, playerState, playing]
   );
 
   useEventListener("forwardscroll", scrubForward);
@@ -83,7 +91,9 @@ const Scubber = ({ isScrubbing }: Props) => {
   /** Update the progress bar every second. */
   useInterval(refresh, 1000);
 
-  useEffect(() => refresh(true), [refresh]);
+  useEffect(() => {
+    refresh(true);
+  }, [refresh]);
 
   return (
     <Container>
