@@ -12,7 +12,7 @@ interface SpotifyPlayerHook {
 const apiUrl = "https://api.spotify.com/v1/me/player";
 
 const useSpotifyPlayer = (): SpotifyPlayerHook => {
-  const { accessToken, deviceId, player } = useSpotifyService();
+  const { accessToken, deviceId, player, playerState } = useSpotifyService();
 
   const headers = {
     "Content-Type": "application/json",
@@ -21,13 +21,18 @@ const useSpotifyPlayer = (): SpotifyPlayerHook => {
 
   const play = useCallback(
     async (uris: string[], offset?: number) => {
-      await fetch(`${apiUrl}/play?device_id=${deviceId}`, {
-        method: "PUT",
-        body: JSON.stringify({ uris, offset: { position: offset ?? 0 } }),
-        headers
-      });
+      const currentTrackUri = playerState?.track_window.current_track.uri;
+      const newTrackUri = uris[offset ?? 0];
+
+      if (currentTrackUri !== newTrackUri) {
+        await fetch(`${apiUrl}/play?device_id=${deviceId}`, {
+          method: "PUT",
+          body: JSON.stringify({ uris, offset: { position: offset ?? 0 } }),
+          headers
+        });
+      }
     },
-    [deviceId, headers]
+    [deviceId, headers, playerState]
   );
 
   const skipNext = useCallback(() => {
@@ -36,9 +41,17 @@ const useSpotifyPlayer = (): SpotifyPlayerHook => {
     }
   }, [player]);
 
-  const skipPrevious = useCallback(() => {
-    if (player) {
-      player.previousTrack();
+  const skipPrevious = useCallback(async () => {
+    const curPlayerState = await player?.getCurrentState();
+    const curTrackTime = curPlayerState?.position;
+
+    /** If the track hasn't progressed at least 3 seconds,
+     * restart it.
+     */
+    if (curTrackTime && curTrackTime < 3000) {
+      player?.previousTrack();
+    } else {
+      player?.seek(0);
     }
   }, [player]);
 

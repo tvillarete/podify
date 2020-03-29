@@ -78,7 +78,7 @@ const _getNewTokens = async (): Promise<TokenResponse> => {
   const state = urlParams.get("state") ?? undefined;
 
   if (!code || !state) {
-    throw new Error("Error: Code or State params weren't found.");
+    return {};
   }
 
   try {
