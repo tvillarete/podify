@@ -27,6 +27,7 @@ const Canvas = styled.canvas`
   border-radius: 50%;
   border: 1px solid #b9b9b9;
   background: white;
+  -webkit-app-region: no-drag;
 `;
 
 const CenterButton = styled.div`
@@ -42,7 +43,7 @@ const CenterButton = styled.div`
   box-shadow: rgb(191, 191, 191) 0px 1em 3em inset;
   background: rgb(225, 225, 225);
   border: 1px solid #b9b9b9;
-  
+
   :active {
     filter: brightness(0.9);
   }

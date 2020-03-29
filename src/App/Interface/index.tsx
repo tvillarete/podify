@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { WINDOW_TYPE } from 'App/views';
-import { Screen, Unit } from 'components';
+import { Unit } from 'components';
 import { useWindowService } from 'services/window';
 import styled from 'styled-components';
 
@@ -18,16 +18,11 @@ const Container = styled.div`
   overflow: hidden;
   background: white;
   animation: fadeFromBlack 0.5s;
+  user-select: none;
 
   @keyframes fadeFromBlack {
     0% {
       filter: brightness(0);
-    }
-  }
-
-  ${Screen.SM} {
-    @media screen and (max-height: 750px) {
-      margin: ${Unit.SM} ${Unit.SM} ${Unit.XL};
     }
   }
 `;
