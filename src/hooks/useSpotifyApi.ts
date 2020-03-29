@@ -11,8 +11,7 @@ const useSpotifyApi = <TType>(
   endpoint: string,
   optionsOverride?: RequestInit
 ): SpotifyApiHook<TType> => {
-  const { spotifyState } = useSpotifyService();
-  const { accessToken } = spotifyState;
+  const { accessToken } = useSpotifyService();
 
   const shouldFetch = !!accessToken;
 

@@ -39,9 +39,7 @@ const TrackProgress = () => {
   const [maxTime, setMaxTime] = useState(0);
   const { playing, loading } = useAudioService();
   const percent = Math.round((currentTime / maxTime) * 100);
-  const {
-    spotifyState: { playerState, player }
-  } = useSpotifyService();
+  const { playerState, player } = useSpotifyService();
 
   const refresh = useCallback(
     async (force?: boolean) => {

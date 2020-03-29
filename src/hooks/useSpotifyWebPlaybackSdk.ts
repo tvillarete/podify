@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { getExistingTokens } from 'utils';
+
 const noop = () => {};
 
 interface Options {
@@ -18,10 +20,17 @@ declare global {
   }
 }
 
+interface PlaybackSdkHook {
+  setupPlayer: () => void;
+  player: Spotify.SpotifyPlayer | null;
+  deviceId: string;
+  isReady: boolean;
+}
+
 export const useSpotifyWebPlaybackSdk = ({
   onPlayerSetupComplete,
   onPlayerStateChanged = noop
-}: Options) => {
+}: Options): PlaybackSdkHook => {
   const [isReady, setIsReady] = useState(false);
   const [deviceId, setDeviceId] = useState("");
   const [listenersMounted, setListenersMounted] = useState(false);
@@ -31,12 +40,15 @@ export const useSpotifyWebPlaybackSdk = ({
   const handlePlayerSetup = useCallback(() => {
     playerRef.current = new Spotify.Player({
       name: "iPod Classic",
-      getOAuthToken: async cb => {
-        const token = await Promise.resolve(
-          localStorage.getItem("spotify_access_token") ?? ""
-        );
-        
-        cb(token);
+      getOAuthToken: async (cb: (token: string) => void) => {
+        const { storedAccessToken } = getExistingTokens();
+
+        if (!storedAccessToken) {
+          console.error("ERROR: Didn't find stored access token");
+          return;
+        }
+
+        cb(storedAccessToken);
       }
     });
     setIsReady(true);

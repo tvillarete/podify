@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import ViewOptions, * as Views from 'App/views';
 import { SelectableList, SelectableListOption } from 'components';
@@ -7,11 +7,21 @@ import { useSpotifyService } from 'services/spotify';
 import { useWindowService } from 'services/window';
 import { isDev } from 'utils';
 
-const AuthView = () => {
-  const { loggedIn } = useSpotifyService();
-  const { resetWindowStack } = useWindowService();
+const initialOptions: SelectableListOption[] = [
+  {
+    label: "Spotify Signin",
+    value: "hi",
+    link: `http://tannerv.ddns.net:3001/${isDev ? "login_dev" : "login"}`
+  }
+];
 
-  useEffect(() => {
+const AuthView = () => {
+  const { resetWindowStack } = useWindowService();
+  const [options] = useState(initialOptions);
+  const [index] = useScrollHandler(ViewOptions.auth.id, options);
+  const { loggedIn } = useSpotifyService();
+
+  const handleCheckLogin = useCallback(() => {
     if (loggedIn) {
       resetWindowStack({
         id: ViewOptions.home.id,
@@ -21,16 +31,9 @@ const AuthView = () => {
     }
   }, [loggedIn, resetWindowStack]);
 
-  const initialOptions: SelectableListOption[] = [
-    {
-      label: "Spotify Signin",
-      value: "hi",
-      link: `http://tannerv.ddns.net:3001/${isDev ? 'login_dev' : 'login'}`
-    }
-  ];
-
-  const [options] = useState(initialOptions);
-  const [index] = useScrollHandler(ViewOptions.auth.id, options);
+  useEffect(() => {
+    handleCheckLogin();
+  }, [handleCheckLogin]);
 
   return <SelectableList options={options} activeIndex={index} />;
 };
