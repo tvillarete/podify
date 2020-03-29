@@ -12,8 +12,7 @@ interface SpotifyPlayerHook {
 const apiUrl = "https://api.spotify.com/v1/me/player";
 
 const useSpotifyPlayer = (): SpotifyPlayerHook => {
-  const { spotifyState } = useSpotifyService();
-  const { accessToken, deviceId, player } = spotifyState;
+  const { accessToken, deviceId, player } = useSpotifyService();
   const { setPlaying } = useAudioService();
 
   const headers = {

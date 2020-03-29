@@ -7,17 +7,17 @@ import React, {
   useState,
 } from 'react';
 
-import { useSpotifyWebPlaybackSdk } from 'hooks';
+import { useInterval, useSpotifyWebPlaybackSdk } from 'hooks';
+import { getTokens } from 'utils';
 
 export interface SpotifyState {
   error?: string;
-  loggedIn: boolean;
+  loggedIn?: boolean;
   player?: Spotify.SpotifyPlayer;
   playerState?: Spotify.PlaybackState;
   deviceId?: string;
   accessToken?: string;
   refreshToken?: string;
-  mountingPlayer?: boolean;
 }
 
 type SpotifyContextType = [
@@ -27,7 +27,6 @@ type SpotifyContextType = [
 
 const SpotifyContext = createContext<SpotifyContextType>([
   {
-    loggedIn: false,
     accessToken: localStorage.getItem("spotify_access_token") ?? undefined
   },
   () => {}
@@ -35,20 +34,46 @@ const SpotifyContext = createContext<SpotifyContextType>([
 
 export interface SpotifyServiceHook {
   loggedIn: boolean;
-  spotifyState: SpotifyState;
+  player?: Spotify.SpotifyPlayer;
+  playerState?: Spotify.PlaybackState;
+  deviceId?: string;
+  accessToken?: string;
 }
 
 /**
  * This hook allows any component to access the Spotify client information:
  */
 export const useSpotifyService = (): SpotifyServiceHook => {
-  const [spotifyState, setSpotifyState] = useContext(SpotifyContext);
+  const [spotifyState] = useContext(SpotifyContext);
+  const {
+    loggedIn = false,
+    player,
+    playerState,
+    deviceId,
+    accessToken
+  } = spotifyState;
+
+  return {
+    loggedIn,
+    player,
+    playerState,
+    deviceId,
+    accessToken
+  };
+};
+
+interface Props {
+  children: React.ReactChild;
+}
+
+const SpotifyProvider = ({ children }: Props) => {
+  const [spotifyState, setSpotifyState] = useState<SpotifyState>({});
 
   const handlePlayerSetupCompletion = useCallback(
     (player: Spotify.SpotifyPlayer, deviceId: string) => {
+      console.log("Player setup completed");
       setSpotifyState(prevState => ({
         ...prevState,
-        mountingPlayer: false,
         player,
         deviceId
       }));
@@ -71,90 +96,31 @@ export const useSpotifyService = (): SpotifyServiceHook => {
     onPlayerStateChanged: handlePlayerStateChange
   });
 
-  useEffect(() => {
-    if (!spotifyState.player && !spotifyState.mountingPlayer) {
+  /** Fetch access tokens and, if successful, then set up the playback sdk. */
+  const handleMount = useCallback(async () => {
+    const { accessToken, refreshToken } = await getTokens();
+
+    setSpotifyState(prevState => ({
+      ...prevState,
+      loggedIn: !!accessToken,
+      accessToken,
+      refreshToken
+    }));
+
+    if (accessToken && refreshToken) {
+      console.log("Setting up player.");
       setupPlayer();
-      setSpotifyState(prevState => ({
-        ...prevState,
-        mountingPlayer: true
-      }));
     }
-  }, [
-    setSpotifyState,
-    setupPlayer,
-    spotifyState.mountingPlayer,
-    spotifyState.player
-  ]);
-
-  const fetchToken = useCallback(
-    async (code: string, state: string) => {
-      try {
-        const response = await fetch(
-          `http://tannerv.ddns.net:3001/callback?state=${state}&code=${code}`,
-          {
-            credentials: "same-origin",
-            mode: "cors"
-          }
-        );
-
-        const { accessToken, refreshToken } = await response.json();
-
-        localStorage.setItem("spotify_access_token", accessToken);
-        localStorage.setItem("spotify_refresh_token", refreshToken);
-
-        const today = new Date();
-
-        localStorage.setItem(
-          "spotify_expires_in",
-          `${today.setHours(today.getHours() + 1)}`
-        );
-
-        setSpotifyState(prevState => ({
-          ...prevState,
-          loggedIn: true,
-          accessToken,
-          refreshToken
-        }));
-      } catch (error) {
-        console.error("error fetching token:", { error });
-      }
-    },
-    [setSpotifyState]
-  );
+  }, [setupPlayer]);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code") ?? "";
-    const state = urlParams.get("state") ?? "";
-    const storedToken = localStorage.getItem("spotify_access_token");
+    handleMount();
+  }, [handleMount]);
 
-    if (storedToken) {
-      setSpotifyState(prevState => ({
-        ...prevState,
-        loggedIn: true,
-        accessToken: storedToken
-      }));
-    } else if (!!code && !!state) {
-      document.cookie = `state=${state}`;
-
-      fetchToken(code, state);
-    }
-  }, [fetchToken, setSpotifyState]);
-
-  return {
-    loggedIn: spotifyState.loggedIn,
-    spotifyState
-  };
-};
-
-interface Props {
-  children: React.ReactChild;
-}
-
-const SpotifyProvider = ({ children }: Props) => {
-  const [spotifyState, setSpotifyState] = useState<SpotifyState>({
-    loggedIn: false
-  });
+  /** Get a new access token every 50 minutes. */
+  useInterval(async () => {
+    getTokens();
+  }, 50 * 60000);
 
   return (
     <SpotifyContext.Provider value={[spotifyState, setSpotifyState]}>

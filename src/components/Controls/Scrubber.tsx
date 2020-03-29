@@ -43,9 +43,7 @@ const Scubber = ({ isScrubbing }: Props) => {
   const [maxTime, setMaxTime] = useState(0);
   const { playing, loading } = useAudioService();
   const percent = Math.round((currentTime / maxTime) * 100);
-  const {
-    spotifyState: { player, playerState }
-  } = useSpotifyService();
+  const { player, playerState } = useSpotifyService();
 
   const scrubForward = useCallback(() => {
     if (currentTime === maxTime || !isScrubbing) return;

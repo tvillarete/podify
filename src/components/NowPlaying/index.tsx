@@ -63,8 +63,7 @@ interface Props {
 }
 
 const NowPlaying = ({ hideArtwork, onHide }: Props) => {
-  const { spotifyState } = useSpotifyService();
-  const { playerState } = spotifyState;
+  const { playerState } = useSpotifyService();
   const [windowHidden, setWindowHidden] = useState(false);
 
   const currentTrack = playerState?.track_window.current_track;

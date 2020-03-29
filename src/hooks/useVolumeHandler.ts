@@ -15,9 +15,7 @@ const useVolumeHandler = (): VolumeHandlerHook => {
   const [volume, setVolume] = useState(100);
   const [enabled, setIsEnabled] = useState(true);
   const timeoutIdRef = useRef<any>();
-  const {
-    spotifyState: { player }
-  } = useSpotifyService();
+  const { player } = useSpotifyService();
 
   const handleMount = useCallback(async () => {
     const currentVolume = ((await player?.getVolume()) ?? 0) * 100;
