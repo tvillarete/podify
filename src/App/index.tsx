@@ -1,12 +1,10 @@
 import React from 'react';
 
 import { ScrollWheel } from 'components';
-import AudioProvider from 'services/audio';
 import SpotifyProvider from 'services/spotify';
 import WindowProvider from 'services/window';
 import styled, { createGlobalStyle } from 'styled-components';
 
-import Audio from './Audio';
 import Interface from './Interface';
 
 const GlobalStyles = createGlobalStyle`
@@ -72,15 +70,12 @@ const App: React.FC = () => {
     <Container>
       <GlobalStyles />
       <SpotifyProvider>
-        <AudioProvider>
-          <WindowProvider>
-            <Shell>
-              <Interface />
-              <ScrollWheel />
-              <Audio />
-            </Shell>
-          </WindowProvider>
-        </AudioProvider>
+        <WindowProvider>
+          <Shell>
+            <Interface />
+            <ScrollWheel />
+          </Shell>
+        </WindowProvider>
       </SpotifyProvider>
     </Container>
   );

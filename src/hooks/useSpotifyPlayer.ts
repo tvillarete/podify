@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 
-import { useAudioService } from 'services/audio';
 import { useSpotifyService } from 'services/spotify';
 
 interface SpotifyPlayerHook {
   play: (uris: string[], offset?: number) => void;
+  togglePause: () => void;
   skipNext: () => void;
   skipPrevious: () => void;
 }
@@ -13,7 +13,6 @@ const apiUrl = "https://api.spotify.com/v1/me/player";
 
 const useSpotifyPlayer = (): SpotifyPlayerHook => {
   const { accessToken, deviceId, player } = useSpotifyService();
-  const { setPlaying } = useAudioService();
 
   const headers = {
     "Content-Type": "application/json",
@@ -27,10 +26,8 @@ const useSpotifyPlayer = (): SpotifyPlayerHook => {
         body: JSON.stringify({ uris, offset: { position: offset ?? 0 } }),
         headers
       });
-
-      setPlaying(true, uris[offset ?? 0]);
     },
-    [deviceId, headers, setPlaying]
+    [deviceId, headers]
   );
 
   const skipNext = useCallback(() => {
@@ -45,8 +42,15 @@ const useSpotifyPlayer = (): SpotifyPlayerHook => {
     }
   }, [player]);
 
+  const togglePause = useCallback(() => {
+    if (player) {
+      player.togglePlay();
+    }
+  }, [player]);
+
   return {
     play,
+    togglePause,
     skipNext,
     skipPrevious
   };

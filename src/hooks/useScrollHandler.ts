@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import ViewOptions from 'App/views';
 import { SelectableListOption } from 'components';
-import { useAudioService } from 'services/audio';
 import { useWindowService } from 'services/window';
 
 import useEventListener from './useEventListener';
@@ -16,8 +15,7 @@ const useScrollHandler = (
   options: SelectableListOption[]
 ): [number] => {
   const { showWindow, windowStack, setPreview } = useWindowService();
-  const { play } = useAudioService();
-  const { play: playOnSpotify } = useSpotifyPlayer();
+  const { play } = useSpotifyPlayer();
   const [index, setIndex] = useState(0);
   const timeoutIdRef = useRef<any>();
   /** Only fire events on the top-most view. */
@@ -81,19 +79,14 @@ const useScrollHandler = (
       });
     }
 
-    /** If a song is found, play the song. */
-    if (option.playlist) {
-      play(option.playlist, option.songIndex);
-    }
-
     if (option.uris) {
-      playOnSpotify(option.uris, option.songIndex);
+      play(option.uris, option.songIndex);
     }
 
     if (option.link) {
       window.open(option.link, "_blank");
     }
-  }, [index, isActive, options, play, playOnSpotify, showWindow]);
+  }, [index, isActive, options, play, showWindow]);
 
   useEffect(() => {
     if (!options || !options[0]) return;
