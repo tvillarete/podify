@@ -10,34 +10,34 @@ import ViewOptions, {
 } from 'App/views';
 import { SelectableList, SelectableListOption } from 'components';
 import { useScrollHandler } from 'hooks';
-import { useAudioService } from 'services/audio';
+import { useSpotifyService } from 'services/spotify';
 
 const strings = {
-  nowPlaying: 'Now Playing'
+  nowPlaying: "Now Playing"
 };
 
 const HomeView = () => {
   const initialOptions: SelectableListOption[] = [
     {
-      label: 'Cover Flow',
+      label: "Cover Flow",
       value: () => <CoverFlowView />,
       viewId: ViewOptions.coverFlow.id,
       preview: PREVIEW.MUSIC
     },
     {
-      label: 'Music',
+      label: "Music",
       value: () => <MusicView />,
       viewId: ViewOptions.music.id,
       preview: PREVIEW.MUSIC
     },
     {
-      label: 'Games',
+      label: "Games",
       value: () => <GamesView />,
       viewId: ViewOptions.games.id,
       preview: PREVIEW.GAMES
     },
     {
-      label: 'Settings',
+      label: "Settings",
       value: () => <SettingsView />,
       viewId: ViewOptions.settings.id,
       preview: PREVIEW.SETTINGS
@@ -45,13 +45,14 @@ const HomeView = () => {
   ];
 
   const [options, setOptions] = useState(initialOptions);
-  const { source } = useAudioService();
   const [index] = useScrollHandler(ViewOptions.home.id, options);
+  const { playerState } = useSpotifyService();
+  const hasNowPlaying = playerState && !!playerState.track_window.current_track;
 
   /** Append the "Now Playing" button to the list of options. */
   const showNowPlaying = useCallback(() => {
     if (
-      source &&
+      hasNowPlaying &&
       !options.find(option => option.label === strings.nowPlaying)
     ) {
       setOptions([
@@ -64,7 +65,7 @@ const HomeView = () => {
         }
       ]);
     }
-  }, [options, source]);
+  }, [options, hasNowPlaying]);
 
   /** Remove the "Now Playing" button from the list of options. */
   const hideNowPlaying = useCallback(() => {
@@ -75,12 +76,12 @@ const HomeView = () => {
 
   /** Conditionally show "Now Playing" button if music is queued/playing. */
   useEffect(() => {
-    if (source) {
+    if (hasNowPlaying) {
       showNowPlaying();
     } else {
       hideNowPlaying();
     }
-  }, [hideNowPlaying, showNowPlaying, source]);
+  }, [hideNowPlaying, showNowPlaying, hasNowPlaying]);
 
   return <SelectableList options={options} activeIndex={index} />;
 };

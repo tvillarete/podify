@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 
 import { useEventListener, useSpotifyPlayer } from 'hooks';
-import { useAudioService } from 'services/audio';
 
 import Knob from './Knob';
 
@@ -31,8 +30,7 @@ const menuClickEvent = new Event("menuclick");
 
 const ScrollWheel = () => {
   const [count, setCount] = useState(0);
-  const { togglePause } = useAudioService();
-  const { skipNext, skipPrevious } = useSpotifyPlayer();
+  const { skipNext, skipPrevious, togglePause } = useSpotifyPlayer();
 
   const handleCenterClick = useCallback(
     () => window.dispatchEvent(centerClickEvent),

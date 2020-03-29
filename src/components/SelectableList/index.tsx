@@ -4,7 +4,6 @@ import { PREVIEW } from 'App/previews';
 import { LoadingIndicator } from 'components';
 import { AnimatePresence } from 'framer-motion';
 import { useTimeout } from 'hooks';
-import { Song } from 'services/audio';
 import styled from 'styled-components';
 
 import SelectableListItem from './SelectableListItem';
@@ -16,7 +15,6 @@ export interface SelectableListOption {
   preview?: PREVIEW;
   link?: string;
   image?: string;
-  playlist?: Song[];
   uris?: string[];
   songIndex?: number;
 }

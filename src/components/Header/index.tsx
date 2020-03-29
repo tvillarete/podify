@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { useAudioService } from 'services/audio';
+import { useSpotifyService } from 'services/spotify';
 import { useWindowService } from 'services/window';
 import styled from 'styled-components';
 
-const Container = styled.div` 
+const Container = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -32,14 +32,16 @@ const Icon = styled.img`
 
 const Header = () => {
   const { headerTitle } = useWindowService();
-  const { playing, source } = useAudioService();
+  const { playerState } = useSpotifyService();
+  const playing = playerState && !playerState.paused;
+  const paused = playerState && playerState.paused;
 
   return headerTitle ? (
     <Container>
       <Text>{headerTitle}</Text>
       <IconContainer>
         {playing && <Icon src="play.svg" />}
-        {source && !playing && <Icon src="pause.svg" />}
+        {paused && <Icon src="pause.svg" />}
         <Icon src="battery.svg" />
       </IconContainer>
     </Container>

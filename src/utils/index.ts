@@ -1,9 +1,4 @@
-import { Song } from 'services/audio';
-
 export * from "./accessToken";
-
-export const getUrlFromPath = (path: string) =>
-  `https://tannerv.ddns.net/SpotiFree/${encodeURI(path)}`;
 
 export const formatTime = (seconds = 0, guide = seconds) => {
   let s: number | string = Math.floor(seconds % 60);
@@ -21,10 +16,6 @@ export const formatTime = (seconds = 0, guide = seconds) => {
   s = s < 10 ? `0${s}` : s;
 
   return h + m + s;
-};
-
-export const setDocumentSongTitle = (song?: Song) => {
-  document.title = song ? `${song.name} – iPod.js` : "iPod.js";
 };
 
 export const isDev = () => window.location.origin.includes("localhost:3000");

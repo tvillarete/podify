@@ -1,9 +1,8 @@
 import React from 'react';
 
 import { motion } from 'framer-motion';
-import { useAudioService } from 'services/audio';
+import { useSpotifyService } from 'services/spotify';
 import styled from 'styled-components';
-import { getUrlFromPath } from 'utils';
 
 const Container = styled(motion.div)`
   height: 100%;
@@ -15,11 +14,13 @@ const Artwork = styled.img`
 `;
 
 const NowPlayingPreview = () => {
-  const { source } = useAudioService();
+  const { playerState } = useSpotifyService();
+  const artwork =
+    playerState?.track_window?.current_track?.album?.images[0].url;
 
-  return source ? (
+  return artwork ? (
     <Container>
-      <Artwork src={getUrlFromPath(source.artwork)} alt="now playing artwork" />
+      <Artwork src={artwork} alt="now playing artwork" />
     </Container>
   ) : null;
 };

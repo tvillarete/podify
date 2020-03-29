@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { LoadingIndicator, Unit } from 'components';
 import { useEventListener, useInterval } from 'hooks';
-import { useAudioService } from 'services/audio';
 import { useSpotifyService } from 'services/spotify';
 import styled from 'styled-components';
 import { formatTime } from 'utils';
@@ -41,9 +40,11 @@ interface Props {
 const Scubber = ({ isScrubbing }: Props) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [maxTime, setMaxTime] = useState(0);
-  const { playing, loading } = useAudioService();
   const percent = Math.round((currentTime / maxTime) * 100);
   const { player, playerState } = useSpotifyService();
+  const playing = playerState && !playerState.paused;
+  // TODO: Get loading state from spotify player.
+  const loading = false;
 
   const scrubForward = useCallback(() => {
     if (currentTime === maxTime || !isScrubbing) return;

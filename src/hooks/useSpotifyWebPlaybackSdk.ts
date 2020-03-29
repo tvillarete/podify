@@ -89,7 +89,11 @@ export const useSpotifyWebPlaybackSdk = ({
   }, [isReady, listenersMounted, mountListeners]);
 
   const setupPlayer = useCallback(() => {
-    window.onSpotifyWebPlaybackSDKReady = () => handlePlayerSetup();
+    if (window.Spotify) {
+      handlePlayerSetup();
+    } else {
+      window.onSpotifyWebPlaybackSDKReady = () => handlePlayerSetup();
+    }
   }, [handlePlayerSetup]);
 
   return {
